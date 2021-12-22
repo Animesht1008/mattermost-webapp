@@ -20,7 +20,7 @@ import {t} from 'utils/i18n';
 
 import LocalizedInput from 'components/localized_input/localized_input';
 
-const EMOJI_PER_ROW = 9; // needs to match variable `$emoji-per-row` in _variables.scss
+import {EMOJI_PER_ROW} from '../constants';
 
 interface Props {
     filter: string;

@@ -17,11 +17,10 @@ import imgTrans from 'images/img_trans.gif';
 
 import NoResultsIndicator from 'components/no_results_indicator/no_results_indicator.tsx';
 
-import EmojiPickerCategory from './components/emoji_picker_category';
 import EmojiPickerItem from './components/emoji_picker_item';
-import EmojiPickerCategorySection from './emoji_picker_category_section';
+import EmojiPickerCategorySection from './components/emoji_picker_category_section';
 import EmojiPickerPreview from './components/emoji_picker_preview';
-import EmojiPickerSearchSkin from './components/emoji_picker_search_skin';
+import EmojiPickerSearch from './components/emoji_picker_search';
 import EmojiPickerSkin from './components/emoji_picker_skin';
 import EmojiPickerCategories from './components/emoji_picker_categories';
 
@@ -328,31 +327,6 @@ export default class EmojiPicker extends React.PureComponent {
         this.props.onEmojiClick(emoji);
     }
 
-    handleCategoryKeyDown = (e) => {
-        switch (e.key) {
-        case 'ArrowRight':
-            e.preventDefault();
-            this.selectNextEmoji();
-            this.searchInputRef?.current?.focus();
-            break;
-        case 'ArrowLeft':
-            e.preventDefault();
-            this.selectPrevEmoji();
-            this.searchInputRef?.current?.focus();
-            break;
-        case 'ArrowUp':
-            e.preventDefault();
-            this.selectPrevEmoji(EMOJI_PER_ROW);
-            this.searchInputRef?.current?.focus();
-            break;
-        case 'ArrowDown':
-            e.preventDefault();
-            this.selectNextEmoji(EMOJI_PER_ROW);
-            this.searchInputRef?.current?.focus();
-            break;
-        }
-    }
-
     handleScroll = () => {
         if (this.emojiPickerContainer) {
             this.updateEmojisToShow(this.emojiPickerContainer.scrollTop);
@@ -536,40 +510,6 @@ export default class EmojiPicker extends React.PureComponent {
         return currentCategoryName;
     }
 
-    emojiCategories() {
-        const categories = this.props.recentEmojis.length ? {...recentEmojiCategory, ...CATEGORIES} : CATEGORIES;
-        const categoryKeys = Object.keys(categories);
-        const currentCategoryName = this.props.filter ? categoryKeys[0] : this.getCurrentEmojiCategoryName();
-        const emojiPickerCategories = categoryKeys.map((categoryName) => {
-            const category = categories[categoryName];
-
-            return (
-                <EmojiPickerCategory
-                    key={'header-' + category.name}
-                    category={category}
-                    icon={
-                        <i
-                            className={category.className}
-                        />
-                    }
-                    onCategoryClick={this.handleCategoryClick}
-                    selected={currentCategoryName === category.name}
-                    enable={!this.props.filter}
-                />
-            );
-        });
-
-        return (
-            <div
-                id='emojiPickerCategories'
-                className='emoji-picker__categories'
-                onKeyDown={this.handleCategoryKeyDown}
-            >
-                {emojiPickerCategories}
-            </div>
-        );
-    }
-
     emojiCurrentResults() {
         const {filter} = this.props;
         const categories = filter ? [CATEGORY_SEARCH_RESULTS] : Object.keys(this.state.categories);
@@ -679,7 +619,6 @@ export default class EmojiPicker extends React.PureComponent {
     }
 
     render() {
-        console.log('rendered emoji picker'); //eslint-disable-line no-console
         return (
             <div
                 className='emoji-picker__inner'
@@ -698,7 +637,7 @@ export default class EmojiPicker extends React.PureComponent {
                     />
                 </div>
                 <div className='emoji-picker__search-container'>
-                    <EmojiPickerSearchSkin
+                    <EmojiPickerSearch
                         ref={this.searchInputRef}
                         filter={this.props.filter}
                         customEmojisEnabled={this.props.customEmojisEnabled}
@@ -717,7 +656,8 @@ export default class EmojiPicker extends React.PureComponent {
                     recentEmojis={this.props.recentEmojis}
                     filter={this.props.filter}
                     onClick={this.handleCategoryClick}
-                    onKeyDown={this.handleCategoryKeyDown}
+                    selectNextEmoji={this.selectNextEmoji}
+                    selectPrevEmoji={this.selectPrevEmoji}
                 />
                 {this.emojiCurrentResults()}
                 <EmojiPickerPreview

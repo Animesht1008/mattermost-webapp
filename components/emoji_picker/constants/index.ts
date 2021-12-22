@@ -42,3 +42,5 @@ export const CATEGORIES: Categories = Emoji.CategoryNames.
             [currentCategory]: createCategory(currentCategory as EmojiCategory),
         };
     }, {} as Categories);
+
+export const EMOJI_PER_ROW = 9; // needs to match variable `$emoji-per-row` in _variables.scss
