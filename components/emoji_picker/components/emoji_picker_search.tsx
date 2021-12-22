@@ -32,7 +32,7 @@ interface Props {
     selectPrevEmoji: (offset?: number) => void;
 }
 
-const EmojiPickerSearchSkin: FC<Props> = forwardRef<HTMLInputElement, Props>(
+const EmojiPickerSearch: FC<Props> = forwardRef<HTMLInputElement, Props>(
     (
         {
             filter,
@@ -172,6 +172,6 @@ const EmojiPickerSearchSkin: FC<Props> = forwardRef<HTMLInputElement, Props>(
     },
 );
 
-EmojiPickerSearchSkin.displayName = 'EmojiPickerSearchSkin';
+EmojiPickerSearch.displayName = 'EmojiPickerSearch';
 
-export default memo(EmojiPickerSearchSkin);
+export default memo(EmojiPickerSearch);
