@@ -1,7 +1,5 @@
 // Copyright (c) 2015-present Mattermost, Inc. All Rights Reserved.
 // See LICENSE.txt for license information.
-/* eslint-disable lines-around-comment */
-/* eslint-disable no-console */
 
 import React, {
     ChangeEvent,
@@ -102,6 +100,7 @@ const EmojiPickerSearch: FC<Props> = forwardRef<HTMLInputElement, Props>(
                     resetCursorPosition();
                     event.currentTarget.selectionStart = filter.length;
                     event.currentTarget.selectionEnd = filter.length;
+
                     // this.searchInputRef?.current?.focus();
                 } else {
                     // Otherwise, move the emoji selector up a row.
@@ -130,16 +129,12 @@ const EmojiPickerSearch: FC<Props> = forwardRef<HTMLInputElement, Props>(
                 // if (clickedEmoji) {
                 //     this.handleEmojiClick(clickedEmoji);
                 // }
-                console.log('Enter');
                 break;
             }
             }
         },
         [cursor, filter, resetCursorPosition, selectNextEmoji, selectPrevEmoji],
         );
-
-        // eslint-disable-next-line no-console
-        console.log('rendered search');
 
         return (
             <div className='emoji-picker__text-container'>
