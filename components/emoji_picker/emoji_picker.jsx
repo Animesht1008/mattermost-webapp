@@ -21,7 +21,9 @@ import EmojiPickerCategory from './components/emoji_picker_category';
 import EmojiPickerItem from './components/emoji_picker_item';
 import EmojiPickerCategorySection from './emoji_picker_category_section';
 import EmojiPickerPreview from './components/emoji_picker_preview';
-import EmojiPickerSearch from './components/emoji_picker_search';
+import EmojiPickerSearchSkin from './components/emoji_picker_search_skin';
+import EmojiPickerSkin from './components/emoji_picker_skin';
+import EmojiPickerCategories from './components/emoji_picker_categories';
 
 const CATEGORY_SEARCH_RESULTS = 'searchResults';
 
@@ -100,7 +102,6 @@ export default class EmojiPicker extends React.PureComponent {
         currentTeamName: PropTypes.string.isRequired,
         actions: PropTypes.shape({
             getCustomEmojis: PropTypes.func.isRequired,
-            searchCustomEmojis: PropTypes.func.isRequired,
             incrementEmojiPickerPage: PropTypes.func.isRequired,
             setUserSkinTone: PropTypes.func.isRequired,
         }).isRequired,
@@ -317,21 +318,6 @@ export default class EmojiPicker extends React.PureComponent {
         }));
     }
 
-    handleSearchChange = (e) => {
-        e.preventDefault();
-
-        // remove trailing and leading colons
-        const value = event.target.value.toLowerCase().replace(/^:|:$/g, '');
-
-        if (this.props.customEmojisEnabled && value && value.trim().length) {
-            this.props.actions.searchCustomEmojis(value);
-        }
-
-        this.props.handleFilterChange(value);
-
-        this.resetCursorPosition();
-    }
-
     handleItemOver = (categoryIndex, emojiIndex) => {
         this.setState({
             cursor: [categoryIndex, emojiIndex],
@@ -367,84 +353,13 @@ export default class EmojiPicker extends React.PureComponent {
         }
     }
 
-    handleSearchKeyDown = (e) => {
-        switch (e.key) {
-        case 'ArrowRight':
-            if ((this.state.cursor[0] !== -1 || this.state.cursor[1] !== -1) || e.target.selectionStart + 1 > this.props.filter.length) {
-                e.preventDefault();
-                this.selectNextEmoji();
-            }
-            break;
-        case 'ArrowLeft':
-            if (this.state.cursor[0] > 0 || this.state.cursor[1] > 0) {
-                e.preventDefault();
-                this.selectPrevEmoji();
-            } else if (this.state.cursor[0] === 0 && this.state.cursor[1] === 0) {
-                this.resetCursorPosition();
-                e.target.selectionStart = this.props.filter.length;
-                e.target.selectionEnd = this.props.filter.length;
-                e.preventDefault();
-                this.searchInputRef?.current?.focus();
-            }
-            break;
-        case 'ArrowUp':
-            e.preventDefault();
-            if (e.shiftKey) {
-                // If Shift + Ctrl/Cmd + Up is pressed at any time,
-                // select/highlight the string to the left of the cursor.
-                e.target.selectionStart = 0;
-            } else if (this.state.cursor[0] === -1) {
-                // If cursor is on the textbox,
-                // set the cursor to the beginning of the string.
-                e.target.selectionStart = 0;
-                e.target.selectionEnd = 0;
-            } else if (this.state.cursor[0] === 0 && this.state.cursor[1] < EMOJI_PER_ROW) {
-                // If the cursor is highlighting an emoji in the top row,
-                // move the cursor back into the text box to the end of the string.
-                this.resetCursorPosition();
-                e.target.selectionStart = this.props.filter.length;
-                e.target.selectionEnd = this.props.filter.length;
-                this.searchInputRef?.current?.focus();
-            } else {
-                // Otherwise, move the emoji selector up a row.
-                this.selectPrevEmoji(EMOJI_PER_ROW);
-            }
-            break;
-        case 'ArrowDown':
-            e.preventDefault();
-            if (e.shiftKey) {
-                // If Shift + Ctrl/Cmd + Down is pressed at any time,
-                // select/highlight the string to the right of the cursor.
-                e.target.selectionEnd = this.props.filter.length;
-            } else if (this.props.filter && e.target.selectionStart === 0) {
-                // If the cursor is at the beginning of the string,
-                // move the cursor to the end of the string.
-                e.target.selectionStart = this.props.filter.length;
-                e.target.selectionEnd = this.props.filter.length;
-            } else {
-                // Otherwise, move the selection down in the emoji picker.
-                this.selectNextEmoji(EMOJI_PER_ROW);
-            }
-            break;
-        case 'Enter': {
-            e.preventDefault();
-
-            const clickedEmoji = this.getCurrentEmojiByCursor(this.state.cursor);
-            if (clickedEmoji) {
-                this.handleEmojiClick(clickedEmoji);
-            }
-            break;
-        }
-        }
-    }
-
     handleScroll = () => {
         if (this.emojiPickerContainer) {
             this.updateEmojisToShow(this.emojiPickerContainer.scrollTop);
         }
     }
 
-    selectNextEmoji(offset = 1) {
+    selectNextEmoji = (offset = 1) => {
         const {cursor} = this.state;
 
         // try moving to next emoji in index
@@ -461,7 +376,7 @@ export default class EmojiPicker extends React.PureComponent {
         }
     }
 
-    selectPrevEmoji(offset = 1) {
+    selectPrevEmoji = (offset = 1) => {
         const {cursor} = this.state;
 
         // try moving to prev emoji in index
@@ -480,10 +395,6 @@ export default class EmojiPicker extends React.PureComponent {
                 this.setState({cursor: newCursor});
             }
         }
-    }
-
-    handleSkinChange = (skin) => {
-        this.props.actions.setUserSkinTone(skin);
     }
 
     getCategoryByIndex = (index) => {
@@ -768,6 +679,7 @@ export default class EmojiPicker extends React.PureComponent {
     }
 
     render() {
+        console.log('rendered emoji picker'); //eslint-disable-line no-console
         return (
             <div
                 className='emoji-picker__inner'
@@ -785,15 +697,28 @@ export default class EmojiPicker extends React.PureComponent {
                         }}
                     />
                 </div>
-                <EmojiPickerSearch
-                    ref={this.searchInputRef}
+                <div className='emoji-picker__search-container'>
+                    <EmojiPickerSearchSkin
+                        ref={this.searchInputRef}
+                        filter={this.props.filter}
+                        customEmojisEnabled={this.props.customEmojisEnabled}
+                        cursor={this.state.cursor}
+                        handleFilterChange={this.props.handleFilterChange}
+                        resetCursorPosition={this.resetCursorPosition}
+                        selectNextEmoji={this.selectNextEmoji}
+                        selectPrevEmoji={this.selectPrevEmoji}
+                    />
+                    <EmojiPickerSkin
+                        userSkinTone={this.props.userSkinTone}
+                        onSkinSelected={this.props.actions.setUserSkinTone}
+                    />
+                </div>
+                <EmojiPickerCategories
+                    recentEmojis={this.props.recentEmojis}
                     filter={this.props.filter}
-                    userSkinTone={this.props.userSkinTone}
-                    onChange={this.handleSearchChange}
-                    onKeyDown={this.handleSearchKeyDown}
-                    onSkinChange={this.handleSkinChange}
+                    onClick={this.handleCategoryClick}
+                    onKeyDown={this.handleCategoryKeyDown}
                 />
-                {this.emojiCategories()}
                 {this.emojiCurrentResults()}
                 <EmojiPickerPreview
                     emoji={this.getCurrentEmojiByCursor(this.state.cursor)}

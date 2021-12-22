@@ -4,6 +4,7 @@
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 
+import {getConfig} from 'mattermost-redux/selectors/entities/general';
 import {getCustomEmojis, searchCustomEmojis} from 'mattermost-redux/actions/emojis';
 
 import {incrementEmojiPickerPage, setUserSkinTone} from 'actions/emoji_actions';
@@ -14,7 +15,7 @@ import EmojiPicker from './emoji_picker.jsx';
 
 function mapStateToProps(state) {
     return {
-        customEmojisEnabled: state.entities.general.config.EnableCustomEmoji === 'true',
+        customEmojisEnabled: getConfig(state)?.EnableCustomEmoji === 'true',
         customEmojiPage: state.views.emoji.emojiPickerCustomPage,
         emojiMap: getEmojiMap(state),
         recentEmojis: getRecentEmojis(state),
