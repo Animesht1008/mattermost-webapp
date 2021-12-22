@@ -23,6 +23,7 @@ import EmojiPickerPreview from './components/emoji_picker_preview';
 import EmojiPickerSearch from './components/emoji_picker_search';
 import EmojiPickerSkin from './components/emoji_picker_skin';
 import EmojiPickerCategories from './components/emoji_picker_categories';
+import EmojiPickerCustomEmojiButton from './components/emoji_picker_custom_emoji_button';
 
 const CATEGORY_SEARCH_RESULTS = 'searchResults';
 
@@ -98,7 +99,6 @@ export default class EmojiPicker extends React.PureComponent {
         userSkinTone: PropTypes.string.isRequired,
         customEmojiPage: PropTypes.number.isRequired,
         visible: PropTypes.bool,
-        currentTeamName: PropTypes.string.isRequired,
         actions: PropTypes.shape({
             getCustomEmojis: PropTypes.func.isRequired,
             incrementEmojiPickerPage: PropTypes.func.isRequired,
@@ -660,11 +660,14 @@ export default class EmojiPicker extends React.PureComponent {
                     selectPrevEmoji={this.selectPrevEmoji}
                 />
                 {this.emojiCurrentResults()}
-                <EmojiPickerPreview
-                    emoji={this.getCurrentEmojiByCursor(this.state.cursor)}
-                    customEmojisEnabled={this.props.customEmojisEnabled}
-                    currentTeamName={this.props.currentTeamName}
-                />
+                <div className='emoji-picker__footer'>
+                    <EmojiPickerPreview
+                        emoji={this.getCurrentEmojiByCursor(this.state.cursor)}
+                    />
+                    <EmojiPickerCustomEmojiButton
+                        customEmojisEnabled={this.props.customEmojisEnabled}
+                    />
+                </div>
             </div>
         );
     }

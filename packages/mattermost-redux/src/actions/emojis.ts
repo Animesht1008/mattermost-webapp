@@ -1,7 +1,11 @@
 // Copyright (c) 2015-present Mattermost, Inc. All Rights Reserved.
 // See LICENSE.txt for license information.
+
+import {createSelector} from 'reselect';
+
 import {Client4} from 'mattermost-redux/client';
 import {EmojiTypes} from 'mattermost-redux/action_types';
+
 import {General, Emoji} from '../constants';
 
 import {getCustomEmojisByName as selectCustomEmojisByName} from 'mattermost-redux/selectors/entities/emojis';
